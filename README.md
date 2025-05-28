@@ -1,3 +1,5 @@
+초보입니다.
+
 ![image](https://github.com/user-attachments/assets/26f527d7-b8f3-4bf5-8314-c0a2757aa150)
 
 단순한 키보드 자동 입력 매크로
