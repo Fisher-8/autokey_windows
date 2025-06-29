@@ -9,11 +9,26 @@ namespace AutoKey_Windows
 {
     public partial class fProgram : Form
     {
-        private static bool aFlag = false, rFlag = false;
-        private static int aDelay1, aDelay2, aDelay3, aDelay4, aDelay5, aDelay6, rDelay;
-        private static System.Timers.Timer rTimer, pTimer;
-        private static Int32 processHandle;
-        private UserSettings usersettings;
+        [DllImport("user32")]
+        static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vKey);
+
+        [DllImport("user32")]
+        static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        [DllImport("user32")]
+        static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32")]
+        static extern IntPtr FindWindowEx(IntPtr hWnd1, IntPtr hWnd2, string lpsz1, string lpsz2);
+
+        [DllImport("user32")]
+        static extern bool PostMessage(IntPtr hWnd, uint Msg, int wParam, IntPtr lParam);
+
+        private static bool flagActive = false, flagRun = false;
+        private static int intervalDelay1, intervalDelay2, intervalDelay3, intervalDelay4, intervalDelay5, intervalDelay6, repeatDelay;
+        private static IntPtr iHandle;
+        private static System.Timers.Timer timerRepeat;
+        private UserSettings userSettings;
 
         public fProgram()
         {
@@ -28,19 +43,10 @@ namespace AutoKey_Windows
             SetTimer();
         }
 
-        [DllImport("user32")]
-        public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vKey);
-
-        [DllImport("user32")]
-        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
-
-        [DllImport("user32")]
-        public static extern IntPtr GetForegroundWindow();
-
         //Form Input
         private void fKey_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!(e.KeyChar == Convert.ToChar(Keys.Back) || Regex.IsMatch(e.KeyChar.ToString(), @"^[0-9a-z]")))
+            if (!(e.KeyChar == Convert.ToChar(Keys.Back) || Regex.IsMatch(e.KeyChar.ToString(), @"^[0-9a-zA-Z]")))
             {
                 e.Handled = true;
             }
@@ -56,7 +62,7 @@ namespace AutoKey_Windows
 
         private void fToggle_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!(e.KeyChar == Convert.ToChar(Keys.Back) || Regex.IsMatch(e.KeyChar.ToString(), @"^[A-Z]")))
+            if (!(e.KeyChar == Convert.ToChar(Keys.Back) || Regex.IsMatch(e.KeyChar.ToString(), @"^[a-zA-Z]")))
             {
                 e.Handled = true;
             }
@@ -64,7 +70,7 @@ namespace AutoKey_Windows
 
         private void fButton_Click(object sender, EventArgs e)
         {
-            if (!aFlag)
+            if (!flagActive)
             {
                 //Save
                 SaveProperties();
@@ -72,17 +78,17 @@ namespace AutoKey_Windows
                 Enum.TryParse<Keys>(fToggleKey.Text, true, out Keys keyCode);
                 RegisterHotKey(this.Handle, 31197, 0, (int)keyCode);
                 //Flag
-                aFlag = true;
+                flagActive = true;
                 //Values
-                if (fUse1.Checked) { int.TryParse(fDelay1.Text, out aDelay1); }
-                if (fUse2.Checked) { int.TryParse(fDelay2.Text, out aDelay2); }
-                if (fUse3.Checked) { int.TryParse(fDelay3.Text, out aDelay3); }
-                if (fUse4.Checked) { int.TryParse(fDelay4.Text, out aDelay4); }
-                if (fUse5.Checked) { int.TryParse(fDelay5.Text, out aDelay5); }
-                if (fUse6.Checked) { int.TryParse(fDelay6.Text, out aDelay6); }
-                int.TryParse(fRepeatDelay.Text, out rDelay);
+                if (fUse1.Checked) { int.TryParse(fDelay1.Text, out intervalDelay1); }
+                if (fUse2.Checked) { int.TryParse(fDelay2.Text, out intervalDelay2); }
+                if (fUse3.Checked) { int.TryParse(fDelay3.Text, out intervalDelay3); }
+                if (fUse4.Checked) { int.TryParse(fDelay4.Text, out intervalDelay4); }
+                if (fUse5.Checked) { int.TryParse(fDelay5.Text, out intervalDelay5); }
+                if (fUse6.Checked) { int.TryParse(fDelay6.Text, out intervalDelay6); }
+                int.TryParse(fRepeatDelay.Text, out repeatDelay);
                 //Timer Interval
-                rTimer.Interval = (aDelay1 + aDelay2 + aDelay3 + aDelay4 + aDelay5 + aDelay6 + rDelay);
+                timerRepeat.Interval = (intervalDelay1 + intervalDelay2 + intervalDelay3 + intervalDelay4 + intervalDelay5 + intervalDelay6 + repeatDelay);
                 //Control
                 SetControl(false);
             }
@@ -91,15 +97,15 @@ namespace AutoKey_Windows
                 //UnRegisterHotKey
                 UnregisterHotKey(this.Handle, 31197);
                 //Flag
-                aFlag = false;
+                flagActive = false;
                 //Values
-                aDelay1 = default;
-                aDelay2 = default;
-                aDelay3 = default;
-                aDelay4 = default;
-                aDelay5 = default;
-                aDelay6 = default;
-                rDelay = default;
+                intervalDelay1 = default;
+                intervalDelay2 = default;
+                intervalDelay3 = default;
+                intervalDelay4 = default;
+                intervalDelay5 = default;
+                intervalDelay6 = default;
+                repeatDelay = default;
                 //Control
                 SetControl(true);
             }
@@ -108,32 +114,34 @@ namespace AutoKey_Windows
         //Check Properties
         private void CheckProperties()
         {
-            usersettings = UserSettings.Load();
-            fUse1.Checked = usersettings.Use1;
-            fUse2.Checked = usersettings.Use2;
-            fUse3.Checked = usersettings.Use3;
-            fUse4.Checked = usersettings.Use4;
-            fUse5.Checked = usersettings.Use5;
-            fUse6.Checked = usersettings.Use6;
-            if (CheckKey(usersettings.Input1)) { fKey1.Text = usersettings.Input1; } else { fKey1.Text = "1"; }
-            if (CheckKey(usersettings.Input2)) { fKey2.Text = usersettings.Input2; } else { fKey2.Text = "2"; }
-            if (CheckKey(usersettings.Input3)) { fKey3.Text = usersettings.Input3; } else { fKey3.Text = "3"; }
-            if (CheckKey(usersettings.Input4)) { fKey4.Text = usersettings.Input4; } else { fKey4.Text = "4"; }
-            if (CheckKey(usersettings.Input5)) { fKey5.Text = usersettings.Input5; } else { fKey5.Text = "5"; }
-            if (CheckKey(usersettings.Input6)) { fKey6.Text = usersettings.Input6; } else { fKey6.Text = "6"; }
-            if (CheckDelay(usersettings.Delay1)) { fDelay1.Text = usersettings.Delay1; } else { fDelay1.Text = "50"; }
-            if (CheckDelay(usersettings.Delay2)) { fDelay2.Text = usersettings.Delay2; } else { fDelay2.Text = "50"; }
-            if (CheckDelay(usersettings.Delay3)) { fDelay3.Text = usersettings.Delay3; } else { fDelay3.Text = "50"; }
-            if (CheckDelay(usersettings.Delay4)) { fDelay4.Text = usersettings.Delay4; } else { fDelay4.Text = "50"; }
-            if (CheckDelay(usersettings.Delay5)) { fDelay5.Text = usersettings.Delay5; } else { fDelay5.Text = "50"; }
-            if (CheckDelay(usersettings.Delay6)) { fDelay6.Text = usersettings.Delay6; } else { fDelay6.Text = "50"; }
-            if (CheckRepeat(usersettings.RepeatDelay)) { fRepeatDelay.Text = usersettings.RepeatDelay; } else { fRepeatDelay.Text = "1000"; }
-            if (CheckToggle(usersettings.HotKey)) { fToggleKey.Text = usersettings.HotKey; } else { fToggleKey.Text = "E"; }
+            userSettings = UserSettings.Load();
+            fUse1.Checked = userSettings.bUse1;
+            fUse2.Checked = userSettings.bUse2;
+            fUse3.Checked = userSettings.bUse3;
+            fUse4.Checked = userSettings.bUse4;
+            fUse5.Checked = userSettings.bUse5;
+            fUse6.Checked = userSettings.bUse6;
+            if (CheckKey(userSettings.sInput1)) { fKey1.Text = userSettings.sInput1; } else { fKey1.Text = "1"; }
+            if (CheckKey(userSettings.sInput2)) { fKey2.Text = userSettings.sInput2; } else { fKey2.Text = "2"; }
+            if (CheckKey(userSettings.sInput3)) { fKey3.Text = userSettings.sInput3; } else { fKey3.Text = "3"; }
+            if (CheckKey(userSettings.sInput4)) { fKey4.Text = userSettings.sInput4; } else { fKey4.Text = "4"; }
+            if (CheckKey(userSettings.sInput5)) { fKey5.Text = userSettings.sInput5; } else { fKey5.Text = "5"; }
+            if (CheckKey(userSettings.sInput6)) { fKey6.Text = userSettings.sInput6; } else { fKey6.Text = "6"; }
+            if (CheckDelay(userSettings.sDelay1)) { fDelay1.Text = userSettings.sDelay1; } else { fDelay1.Text = "50"; }
+            if (CheckDelay(userSettings.sDelay2)) { fDelay2.Text = userSettings.sDelay2; } else { fDelay2.Text = "50"; }
+            if (CheckDelay(userSettings.sDelay3)) { fDelay3.Text = userSettings.sDelay3; } else { fDelay3.Text = "50"; }
+            if (CheckDelay(userSettings.sDelay4)) { fDelay4.Text = userSettings.sDelay4; } else { fDelay4.Text = "50"; }
+            if (CheckDelay(userSettings.sDelay5)) { fDelay5.Text = userSettings.sDelay5; } else { fDelay5.Text = "50"; }
+            if (CheckDelay(userSettings.sDelay6)) { fDelay6.Text = userSettings.sDelay6; } else { fDelay6.Text = "50"; }
+            if (CheckRepeat(userSettings.sDelayRepeat)) { fRepeatDelay.Text = userSettings.sDelayRepeat; } else { fRepeatDelay.Text = "1000"; }
+            if (CheckToggle(userSettings.sHotKey)) { fToggleKey.Text = userSettings.sHotKey; } else { fToggleKey.Text = "E"; }
+            if (CheckBehavior(userSettings.sBehavior)) { fBehavBox.SelectedIndex = int.Parse(userSettings.sBehavior); } else { fBehavBox.SelectedIndex = 0; }
+
         }
 
         private static bool CheckKey(string s)
         {
-            if (Regex.IsMatch(s, @"^[0-9a-z]") && s.Length == 1)
+            if (Regex.IsMatch(s, @"^[0-9a-zA-Z]") && s.Length == 1)
             {
                 return true;
             }
@@ -176,46 +184,46 @@ namespace AutoKey_Windows
 
         private static bool CheckToggle(string s)
         {
-            if (Regex.IsMatch(s, @"^[A-Z]") && s.Length == 1)
+            if (Regex.IsMatch(s, @"^[a-zA-Z]") && s.Length == 1)
             {
                 return true;
             }
             return false;
-
+        }
+        private static bool CheckBehavior(string s)
+        {
+            if (Regex.IsMatch(s, @"^[0-2]") && s.Length == 1)
+            {
+                return true;
+            }
+            return false;
         }
 
         //Save Properties
         private void SaveProperties()
         {
-            usersettings.Use1 = fUse1.Checked;
-            usersettings.Use2 = fUse2.Checked;
-            usersettings.Use3 = fUse3.Checked;
-            usersettings.Use4 = fUse4.Checked;
-            usersettings.Use5 = fUse5.Checked;
-            usersettings.Use6 = fUse6.Checked;
-            usersettings.Input1 = fKey1.Text;
-            usersettings.Input2 = fKey2.Text;
-            usersettings.Input3 = fKey3.Text;
-            usersettings.Input4 = fKey4.Text;
-            usersettings.Input5 = fKey5.Text;
-            usersettings.Input6 = fKey6.Text;
-            usersettings.Delay1 = fDelay1.Text;
-            usersettings.Delay2 = fDelay2.Text;
-            usersettings.Delay3 = fDelay3.Text;
-            usersettings.Delay4 = fDelay4.Text;
-            usersettings.Delay5 = fDelay5.Text;
-            usersettings.Delay6 = fDelay6.Text;
-            usersettings.RepeatDelay = fRepeatDelay.Text;
-            usersettings.HotKey = fToggleKey.Text;
-            usersettings.Save();
-        }
-
-        //Timer
-        private void SetTimer()
-        {
-            rTimer = new System.Timers.Timer();
-            rTimer.Elapsed += new ElapsedEventHandler(AutoKey);
-            rTimer.AutoReset = true;
+            userSettings.bUse1 = fUse1.Checked;
+            userSettings.bUse2 = fUse2.Checked;
+            userSettings.bUse3 = fUse3.Checked;
+            userSettings.bUse4 = fUse4.Checked;
+            userSettings.bUse5 = fUse5.Checked;
+            userSettings.bUse6 = fUse6.Checked;
+            userSettings.sInput1 = fKey1.Text;
+            userSettings.sInput2 = fKey2.Text;
+            userSettings.sInput3 = fKey3.Text;
+            userSettings.sInput4 = fKey4.Text;
+            userSettings.sInput5 = fKey5.Text;
+            userSettings.sInput6 = fKey6.Text;
+            userSettings.sDelay1 = fDelay1.Text;
+            userSettings.sDelay2 = fDelay2.Text;
+            userSettings.sDelay3 = fDelay3.Text;
+            userSettings.sDelay4 = fDelay4.Text;
+            userSettings.sDelay5 = fDelay5.Text;
+            userSettings.sDelay6 = fDelay6.Text;
+            userSettings.sDelayRepeat = fRepeatDelay.Text;
+            userSettings.sHotKey = fToggleKey.Text;
+            userSettings.sBehavior = fBehavBox.SelectedIndex.ToString();
+            userSettings.Save();
         }
 
         //Form Control
@@ -243,6 +251,7 @@ namespace AutoKey_Windows
                 fDelay6.Enabled = true;
                 fRepeatDelay.Enabled = true;
                 fToggleKey.Enabled = true;
+                fBehavBox.Enabled = true;
                 fButton.Text = "Set";
             }
             else
@@ -267,73 +276,115 @@ namespace AutoKey_Windows
                 fDelay6.Enabled = false;
                 fRepeatDelay.Enabled = false;
                 fToggleKey.Enabled = false;
+                fBehavBox.Enabled = false;
                 fButton.Text = "Unset";
             }
         }
 
-        //Get Active Process Handle
-        private Int32 GetHandle()
+        //Get Process Handle
+        private IntPtr GetHandle()
         {
-            IntPtr i = GetForegroundWindow();
-            return i.ToInt32();
+            if (FindWindowEx(GetForegroundWindow(), IntPtr.Zero, null, "")  != IntPtr.Zero)
+            {
+                return FindWindowEx(GetForegroundWindow(), IntPtr.Zero, null, "");
+            }
+            else
+            {
+                return GetForegroundWindow();
+            }
         }
 
-        //Job Control
+        //Timer
+        private void SetTimer()
+        {
+            timerRepeat = new System.Timers.Timer();
+            switch (fBehavBox.SelectedIndex)
+            {
+                case 0: timerRepeat.Elapsed += new ElapsedEventHandler(AutoKey1); break;
+                case 1: timerRepeat.Elapsed += new ElapsedEventHandler(AutoKey2); break;
+                case 2: timerRepeat.Elapsed += new ElapsedEventHandler(AutoKey3); break;
+            }
+            timerRepeat.AutoReset = true;
+        }
+
+        //Job
+        private void AutoKey1(object sender, ElapsedEventArgs e)
+        {
+            if (fUse1.Checked) { PostChar1(iHandle, fKey1.Text.ToCharArray()[0]); Task.Delay(intervalDelay1).Wait(); }
+            if (fUse2.Checked) { PostChar1(iHandle, fKey2.Text.ToCharArray()[0]); Task.Delay(intervalDelay2).Wait(); }
+            if (fUse3.Checked) { PostChar1(iHandle, fKey3.Text.ToCharArray()[0]); Task.Delay(intervalDelay3).Wait(); }
+            if (fUse4.Checked) { PostChar1(iHandle, fKey4.Text.ToCharArray()[0]); Task.Delay(intervalDelay4).Wait(); }
+            if (fUse5.Checked) { PostChar1(iHandle, fKey5.Text.ToCharArray()[0]); Task.Delay(intervalDelay5).Wait(); }
+            if (fUse6.Checked) { PostChar1(iHandle, fKey6.Text.ToCharArray()[0]); Task.Delay(intervalDelay6).Wait(); }
+        }
+        private void AutoKey2(object sender, ElapsedEventArgs e)
+        {
+            if (fUse1.Checked) { PostChar2(iHandle, fKey1.Text.ToCharArray()[0]); Task.Delay(intervalDelay1).Wait(); }
+            if (fUse2.Checked) { PostChar2(iHandle, fKey2.Text.ToCharArray()[0]); Task.Delay(intervalDelay2).Wait(); }
+            if (fUse3.Checked) { PostChar2(iHandle, fKey3.Text.ToCharArray()[0]); Task.Delay(intervalDelay3).Wait(); }
+            if (fUse4.Checked) { PostChar2(iHandle, fKey4.Text.ToCharArray()[0]); Task.Delay(intervalDelay4).Wait(); }
+            if (fUse5.Checked) { PostChar2(iHandle, fKey5.Text.ToCharArray()[0]); Task.Delay(intervalDelay5).Wait(); }
+            if (fUse6.Checked) { PostChar2(iHandle, fKey6.Text.ToCharArray()[0]); Task.Delay(intervalDelay6).Wait(); }
+        }
+        private void AutoKey3(object sender, ElapsedEventArgs e)
+        {
+            if (fUse1.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey1.Text); Task.Delay(intervalDelay1).Wait(); }
+            if (fUse2.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey2.Text); Task.Delay(intervalDelay2).Wait(); }
+            if (fUse3.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey3.Text); Task.Delay(intervalDelay3).Wait(); }
+            if (fUse4.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey4.Text); Task.Delay(intervalDelay4).Wait(); }
+            if (fUse5.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey5.Text); Task.Delay(intervalDelay5).Wait(); }
+            if (fUse6.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey6.Text); Task.Delay(intervalDelay6).Wait(); }
+        }
+
+        //KeyEvent
+        static void PostChar1(IntPtr id, char key)
+        {
+            //WM_KEYDOWN
+            PostMessage(id, 0x0100, key, IntPtr.Zero);
+        }
+        static void PostChar2(IntPtr id, char key)
+        {
+            //WM_KEYDOWN
+            PostMessage(id, 0x0100, key, IntPtr.Zero);
+            //WM_KEYUP
+            PostMessage(id, 0x0101, key, IntPtr.Zero);
+        }
+
+        //Active
         private void SetActive(bool b)
         {
             if (b)
             {
                 //Flag
-                rFlag = true;
+                flagRun = true;
                 //Get Active Process Handle
-                processHandle = GetHandle();
+                iHandle = GetHandle();
                 //Form
                 fButton.Enabled = false;
                 fButton.Text = "RUNNING";
-                //Instant
-                AutoKey(null, null);
                 //Repeat
-                rTimer.Enabled = true;
+                timerRepeat.Enabled = true;
             }
             else
             {
                 //Stop
-                rTimer.Enabled = false;
+                timerRepeat.Enabled = false;
                 //Form
                 fButton.Enabled = true;
                 fButton.Text = "Unset";
                 //Flag
-                rFlag = false;
-            }
-        }
-
-        //Job
-        private void AutoKey(object sender, ElapsedEventArgs e)
-        {
-            if (GetHandle() == processHandle)
-            {
-                //Sendkey
-                if (fUse1.Checked) { SendKeys.SendWait(fKey1.Text); Task.Delay(aDelay1).Wait(); }
-                if (fUse2.Checked) { SendKeys.SendWait(fKey2.Text); Task.Delay(aDelay2).Wait(); }
-                if (fUse3.Checked) { SendKeys.SendWait(fKey3.Text); Task.Delay(aDelay3).Wait(); }
-                if (fUse4.Checked) { SendKeys.SendWait(fKey4.Text); Task.Delay(aDelay4).Wait(); }
-                if (fUse5.Checked) { SendKeys.SendWait(fKey5.Text); Task.Delay(aDelay5).Wait(); }
-                if (fUse6.Checked) { SendKeys.SendWait(fKey6.Text); Task.Delay(aDelay6).Wait(); }
-            }
-            else
-            {
-                SetActive(false);
+                flagRun = false;
             }
         }
 
         //Hotkey
         protected override void WndProc(ref Message m)
         {
-            if (m.WParam.ToInt32() == 31197 && !rFlag)
+            if (m.WParam.ToInt32() == 31197 && !flagRun)
             {
                 SetActive(true);
             }
-            else if (m.WParam.ToInt32() == 31197 && rFlag)
+            else if (m.WParam.ToInt32() == 31197 && flagRun)
             {
                 SetActive(false);
             }
