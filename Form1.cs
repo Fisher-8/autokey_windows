@@ -22,8 +22,12 @@ namespace AutoKey_Windows
         static extern IntPtr FindWindowEx(IntPtr hWnd1, IntPtr hWnd2, string lpsz1, string lpsz2);
 
         [DllImport("user32")]
-        static extern bool PostMessage(IntPtr hWnd, uint Msg, int wParam, IntPtr lParam);
+        static extern bool IsWindow(IntPtr hWnd);
 
+        [DllImport("user32")]
+        static extern void PostMessage(IntPtr hWnd, uint Msg, int wParam, IntPtr lParam);
+
+        private Overlay1 overlay1;
         private static bool flagActive = false, flagRun = false;
         private static int intervalDelay1, intervalDelay2, intervalDelay3, intervalDelay4, intervalDelay5, intervalDelay6, repeatDelay;
         private static IntPtr iHandle;
@@ -340,14 +344,12 @@ namespace AutoKey_Windows
         static void PostChar1(IntPtr id, char key)
         {
             //WM_KEYDOWN
-            PostMessage(id, 0x0100, key, IntPtr.Zero);
+            if (IsWindow(id)) { PostMessage(id, 0x0100, key, IntPtr.Zero); }
         }
         static void PostChar2(IntPtr id, char key)
         {
-            //WM_KEYDOWN
-            PostMessage(id, 0x0100, key, IntPtr.Zero);
-            //WM_KEYUP
-            PostMessage(id, 0x0101, key, IntPtr.Zero);
+            //WM_KEYDOWN + WM_KEYUP
+            if (IsWindow(id)) { PostMessage(id, 0x0100, key, IntPtr.Zero); PostMessage(id, 0x0101, key, IntPtr.Zero); }
         }
 
         //Active
@@ -362,6 +364,8 @@ namespace AutoKey_Windows
                 //Form
                 fButton.Enabled = false;
                 fButton.Text = "RUNNING";
+                overlay1 = new Overlay1();
+                overlay1.Show();
                 //Repeat
                 timerRepeat.Enabled = true;
             }
@@ -372,6 +376,8 @@ namespace AutoKey_Windows
                 //Form
                 fButton.Enabled = true;
                 fButton.Text = "Unset";
+                overlay1.Close();
+                overlay1 = null;
                 //Flag
                 flagRun = false;
             }

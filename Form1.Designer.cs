@@ -66,7 +66,6 @@
             this.label1.Name = "label1";
             this.label1.Location = new System.Drawing.Point(8, 9);
             this.label1.Size = new System.Drawing.Size(13, 13);
-            this.label1.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label1.Text = "1";
             // 
@@ -75,7 +74,6 @@
             this.label2.Name = "label2";
             this.label2.Location = new System.Drawing.Point(8, 31);
             this.label2.Size = new System.Drawing.Size(13, 13);
-            this.label2.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label2.Text = "2";
             // 
@@ -84,7 +82,6 @@
             this.label3.Name = "label3";
             this.label3.Location = new System.Drawing.Point(8, 53);
             this.label3.Size = new System.Drawing.Size(13, 13);
-            this.label3.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label3.Text = "3";
             // 
@@ -93,7 +90,6 @@
             this.label4.Name = "label4";
             this.label4.Location = new System.Drawing.Point(8, 75);
             this.label4.Size = new System.Drawing.Size(13, 13);
-            this.label4.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label4.Text = "4";
             // 
@@ -102,7 +98,6 @@
             this.label5.Name = "label5";
             this.label5.Location = new System.Drawing.Point(8, 97);
             this.label5.Size = new System.Drawing.Size(13, 13);
-            this.label5.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label5.Text = "5";
             // 
@@ -111,7 +106,6 @@
             this.label6.Name = "label6";
             this.label6.Location = new System.Drawing.Point(8, 119);
             this.label6.Size = new System.Drawing.Size(13, 13);
-            this.label6.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label6.Text = "6";
             // 
@@ -120,7 +114,6 @@
             this.label7.Name = "label7";
             this.label7.Location = new System.Drawing.Point(8, 141);
             this.label7.Size = new System.Drawing.Size(34, 13);
-            this.label7.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label7.Text = "Delay";
             // 
@@ -129,7 +122,6 @@
             this.label8.Name = "label8";
             this.label8.Location = new System.Drawing.Point(8, 163);
             this.label8.Size = new System.Drawing.Size(42, 13);
-            this.label8.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label8.Text = "HotKey";
             // 
@@ -138,7 +130,6 @@
             this.fUse1.Name = "fUse1";
             this.fUse1.Location = new System.Drawing.Point(24, 9);
             this.fUse1.Size = new System.Drawing.Size(15, 14);
-            this.fUse1.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fUse1.UseVisualStyleBackColor = true;
             this.fUse1.TabIndex = 1;
             // 
@@ -147,7 +138,6 @@
             this.fUse2.Name = "fUse2";
             this.fUse2.Location = new System.Drawing.Point(24, 31);
             this.fUse2.Size = new System.Drawing.Size(15, 14);
-            this.fUse2.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fUse2.UseVisualStyleBackColor = true;
             this.fUse2.TabIndex = 2;
             // 
@@ -156,7 +146,6 @@
             this.fUse3.Name = "fUse3";
             this.fUse3.Location = new System.Drawing.Point(24, 53);
             this.fUse3.Size = new System.Drawing.Size(15, 14);
-            this.fUse3.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fUse3.UseVisualStyleBackColor = true;
             this.fUse3.TabIndex = 3;
             // 
@@ -165,7 +154,6 @@
             this.fUse4.Name = "fUse4";
             this.fUse4.Location = new System.Drawing.Point(24, 75);
             this.fUse4.Size = new System.Drawing.Size(15, 14);
-            this.fUse4.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fUse4.UseVisualStyleBackColor = true;
             this.fUse4.TabIndex = 4;
             // 
@@ -174,7 +162,6 @@
             this.fUse5.Name = "fUse5";
             this.fUse5.Location = new System.Drawing.Point(24, 97);
             this.fUse5.Size = new System.Drawing.Size(15, 14);
-            this.fUse5.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fUse5.UseVisualStyleBackColor = true;
             this.fUse5.TabIndex = 5;
             // 
@@ -183,7 +170,6 @@
             this.fUse6.Name = "fUse6";
             this.fUse6.Location = new System.Drawing.Point(24, 119);
             this.fUse6.Size = new System.Drawing.Size(15, 14);
-            this.fUse6.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fUse6.UseVisualStyleBackColor = true;
             this.fUse6.TabIndex = 6;
             // 
@@ -193,7 +179,6 @@
             this.fKey1.Location = new System.Drawing.Point(44, 6);
             this.fKey1.Size = new System.Drawing.Size(20, 21);
             this.fKey1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fKey1.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fKey1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fKey1.MaxLength = 1;
             this.fKey1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fKey_KeyPress);
@@ -205,7 +190,6 @@
             this.fKey2.Location = new System.Drawing.Point(44, 28);
             this.fKey2.Size = new System.Drawing.Size(20, 21);
             this.fKey2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fKey2.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fKey2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fKey2.MaxLength = 1;
             this.fKey2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fKey_KeyPress);
@@ -217,7 +201,6 @@
             this.fKey3.Location = new System.Drawing.Point(44, 50);
             this.fKey3.Size = new System.Drawing.Size(20, 21);
             this.fKey3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fKey3.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fKey3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fKey3.MaxLength = 1;
             this.fKey3.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fKey_KeyPress);
@@ -229,7 +212,6 @@
             this.fKey4.Location = new System.Drawing.Point(44, 72);
             this.fKey4.Size = new System.Drawing.Size(20, 21);
             this.fKey4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fKey4.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fKey4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fKey4.MaxLength = 1;
             this.fKey4.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fKey_KeyPress);
@@ -241,7 +223,6 @@
             this.fKey5.Location = new System.Drawing.Point(44, 94);
             this.fKey5.Size = new System.Drawing.Size(20, 21);
             this.fKey5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fKey5.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fKey5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fKey5.MaxLength = 1;
             this.fKey5.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fKey_KeyPress);
@@ -253,7 +234,6 @@
             this.fKey6.Location = new System.Drawing.Point(44, 116);
             this.fKey6.Size = new System.Drawing.Size(20, 21);
             this.fKey6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fKey6.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fKey6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fKey6.MaxLength = 1;
             this.fKey6.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fKey_KeyPress);
@@ -265,7 +245,6 @@
             this.fDelay1.Location = new System.Drawing.Point(65, 6);
             this.fDelay1.Size = new System.Drawing.Size(50, 21);
             this.fDelay1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fDelay1.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fDelay1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fDelay1.MaxLength = 4;
             this.fDelay1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fDigit_KeyPress);
@@ -277,7 +256,6 @@
             this.fDelay2.Location = new System.Drawing.Point(65, 28);
             this.fDelay2.Size = new System.Drawing.Size(50, 21);
             this.fDelay2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fDelay2.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fDelay2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fDelay2.MaxLength = 4;
             this.fDelay2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fDigit_KeyPress);
@@ -289,7 +267,6 @@
             this.fDelay3.Location = new System.Drawing.Point(65, 50);
             this.fDelay3.Size = new System.Drawing.Size(50, 21);
             this.fDelay3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fDelay3.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fDelay3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fDelay3.MaxLength = 4;
             this.fDelay3.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fDigit_KeyPress);
@@ -301,7 +278,6 @@
             this.fDelay4.Location = new System.Drawing.Point(65, 72);
             this.fDelay4.Size = new System.Drawing.Size(50, 21);
             this.fDelay4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fDelay4.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fDelay4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fDelay4.MaxLength = 4;
             this.fDelay4.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fDigit_KeyPress);
@@ -313,7 +289,6 @@
             this.fDelay5.Location = new System.Drawing.Point(65, 94);
             this.fDelay5.Size = new System.Drawing.Size(50, 21);
             this.fDelay5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fDelay5.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fDelay5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fDelay5.MaxLength = 4;
             this.fDelay5.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fDigit_KeyPress);
@@ -325,7 +300,6 @@
             this.fDelay6.Location = new System.Drawing.Point(65, 116);
             this.fDelay6.Size = new System.Drawing.Size(50, 21);
             this.fDelay6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fDelay6.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fDelay6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fDelay6.MaxLength = 4;
             this.fDelay6.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fDigit_KeyPress);
@@ -337,7 +311,6 @@
             this.fRepeatDelay.Location = new System.Drawing.Point(65, 138);
             this.fRepeatDelay.Size = new System.Drawing.Size(50, 21);
             this.fRepeatDelay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fRepeatDelay.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fRepeatDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fRepeatDelay.MaxLength = 5;
             this.fRepeatDelay.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fDigit_KeyPress);
@@ -349,7 +322,6 @@
             this.fToggleKey.Location = new System.Drawing.Point(65, 160);
             this.fToggleKey.Size = new System.Drawing.Size(50, 21);
             this.fToggleKey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fToggleKey.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fToggleKey.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fToggleKey.MaxLength = 1;
             this.fToggleKey.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fToggle_KeyPress);
@@ -361,7 +333,6 @@
             this.fBehavBox.Location = new System.Drawing.Point(7, 183);
             this.fBehavBox.Size = new System.Drawing.Size(108, 21);
             this.fBehavBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.fBehavBox.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fBehavBox.Items.AddRange(new object[] {
             "Post KeyDown",
             "Post KeyDown+Up",
@@ -374,7 +345,6 @@
             this.fButton.Name = "fButton";
             this.fButton.Location = new System.Drawing.Point(6, 205);
             this.fButton.Size = new System.Drawing.Size(110, 23);
-            this.fButton.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.fButton.Text = "Set";
             this.fButton.Click += new System.EventHandler(this.fButton_Click);
             this.fButton.UseVisualStyleBackColor = true;
