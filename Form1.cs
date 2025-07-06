@@ -49,6 +49,7 @@ namespace AutoKey_Windows
             RegisterHotKey(this.Handle, 31196, 0, 0x70);
             //Overlay
             overlay1 = new Overlay1();
+            overlay1.Owner = this;
         }
 
         private void fProgram_Close(object sender, EventArgs e)
