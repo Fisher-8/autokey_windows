@@ -78,9 +78,6 @@
     <Compile Include="Overlay1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Overlay1.Designer.cs">
-      <DependentUpon>Overlay1.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserSettings.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

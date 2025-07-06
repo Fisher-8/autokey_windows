@@ -20,9 +20,9 @@ namespace AutoKey_Windows
             //label1
             label1 = new Label();
             label1.AutoSize = false;
-            label1.Size = new Size(60, 20);
+            label1.Size = new Size(20, 20);
             label1.Margin = new Padding(0);
-            label1.Padding = new Padding(0, 0, 0, 1);
+            label1.Padding = new Padding(1, 0, 0, 1);
             label1.TextAlign = ContentAlignment.MiddleCenter;
             label1.Font = new Font("Verdana", 9, FontStyle.Bold);
             label1.ForeColor = Color.White;
@@ -33,8 +33,8 @@ namespace AutoKey_Windows
         {
             switch (i)
             {
-                case 0: label1.Text = "READY"; label1.BackColor = Color.Blue; this.Show(); break;
-                case 1: label1.Text = "ACTIVE"; label1.BackColor = Color.Red; this.Show(); break;
+                case 0: label1.Text = "\u25FC"; label1.BackColor = Color.Red; this.Show(); break;
+                case 1: label1.Text = "\u25B6"; label1.BackColor = Color.Blue; this.Show(); break;
                 case 2: this.Hide(); break;
             }
         }

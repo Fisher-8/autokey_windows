@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace AutoKey_Windows
 {
@@ -75,14 +76,6 @@ namespace AutoKey_Windows
             }
         }
 
-        private void fToggle_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!(e.KeyChar == Convert.ToChar(Keys.Back) || Regex.IsMatch(e.KeyChar.ToString(), @"^[a-zA-Z]")))
-            {
-                e.Handled = true;
-            }
-        }
-
         private void fButton_Click(object sender, EventArgs e)
         {
             if (!flagActive)
@@ -90,8 +83,7 @@ namespace AutoKey_Windows
                 //Save
                 SaveProperties();
                 //RegisterHotKey(Userset)
-                Enum.TryParse<Keys>(fToggleKey.Text, true, out Keys keyCode);
-                RegisterHotKey(this.Handle, 31197, 0, (int)keyCode);
+                RegisterHotKey(this.Handle, 31197, 0, (int)(Keys)Enum.ToObject(typeof(Keys), fToggleKey.Text[0]));
                 //Flag
                 flagActive = true;
                 //Values
@@ -153,7 +145,7 @@ namespace AutoKey_Windows
             if (CheckDelay(userSettings.sDelay5)) { fDelay5.Text = userSettings.sDelay5; } else { fDelay5.Text = "50"; }
             if (CheckDelay(userSettings.sDelay6)) { fDelay6.Text = userSettings.sDelay6; } else { fDelay6.Text = "50"; }
             if (CheckRepeat(userSettings.sDelayRepeat)) { fRepeatDelay.Text = userSettings.sDelayRepeat; } else { fRepeatDelay.Text = "1000"; }
-            if (CheckToggle(userSettings.sHotKey)) { fToggleKey.Text = userSettings.sHotKey; } else { fToggleKey.Text = "E"; }
+            if (CheckKey(userSettings.sHotKey)) { fToggleKey.Text = userSettings.sHotKey; } else { fToggleKey.Text = "E"; }
             if (CheckBehavior(userSettings.sBehavior)) { fBehavBox.SelectedIndex = int.Parse(userSettings.sBehavior); } else { fBehavBox.SelectedIndex = 0; }
         }
 
@@ -198,14 +190,6 @@ namespace AutoKey_Windows
             return true;
         }
 
-        private static bool CheckToggle(string s)
-        {
-            if (Regex.IsMatch(s, @"^[a-zA-Z]") && s.Length == 1)
-            {
-                return true;
-            }
-            return false;
-        }
         private static bool CheckBehavior(string s)
         {
             if (Regex.IsMatch(s, @"^[0-2]") && s.Length == 1)
@@ -398,6 +382,11 @@ namespace AutoKey_Windows
         {
             if (m.WParam.ToInt32() == 31196 && !flagRun)
             {
+                fButton_Click(null, null);
+            }
+            if (m.WParam.ToInt32() == 31196 && flagRun)
+            {
+                SetActive(false);
                 fButton_Click(null, null);
             }
             else if (m.WParam.ToInt32() == 31197 && !flagRun)

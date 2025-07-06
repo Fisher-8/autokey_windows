@@ -318,7 +318,7 @@
             this.fToggleKey.Size = new System.Drawing.Size(50, 20);
             this.fToggleKey.TabIndex = 20;
             this.fToggleKey.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.fToggleKey.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fToggle_KeyPress);
+            this.fToggleKey.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fKey_KeyPress);
             // 
             // fBehavBox
             // 
