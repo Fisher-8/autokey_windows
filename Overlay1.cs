@@ -6,6 +6,7 @@ namespace AutoKey_Windows
     public partial class Overlay1 : Form
     {
         private Label label1;
+
         public Overlay1()
         {
             this.TopMost = true;
@@ -23,11 +24,19 @@ namespace AutoKey_Windows
             label1.Margin = new Padding(0);
             label1.Padding = new Padding(0, 0, 0, 1);
             label1.TextAlign = ContentAlignment.MiddleCenter;
-            label1.Text = "ACTIVE";
             label1.Font = new Font("Verdana", 9, FontStyle.Bold);
             label1.ForeColor = Color.White;
-            label1.BackColor = Color.Red;
             this.Controls.Add(label1);
+        }
+
+    public void OverlayControl(int i)
+        {
+            switch (i)
+            {
+                case 0: label1.Text = "READY"; label1.BackColor = Color.Blue; this.Show(); break;
+                case 1: label1.Text = "ACTIVE"; label1.BackColor = Color.Red; this.Show(); break;
+                case 2: this.Hide(); break;
+            }
         }
     }
 }

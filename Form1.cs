@@ -27,12 +27,12 @@ namespace AutoKey_Windows
         [DllImport("user32")]
         static extern void PostMessage(IntPtr hWnd, uint Msg, int wParam, IntPtr lParam);
 
-        private Overlay1 overlay1;
         private static bool flagActive = false, flagRun = false;
         private static int intervalDelay1, intervalDelay2, intervalDelay3, intervalDelay4, intervalDelay5, intervalDelay6, repeatDelay;
         private static IntPtr iHandle;
         private static System.Timers.Timer timerRepeat;
         private UserSettings userSettings;
+        private Overlay1 overlay1;
 
         public fProgram()
         {
@@ -45,6 +45,16 @@ namespace AutoKey_Windows
             CheckProperties();
             //Timer
             SetTimer();
+            //RegisterHotKey(F1)
+            RegisterHotKey(this.Handle, 31196, 0, 0x70);
+            //Overlay
+            overlay1 = new Overlay1();
+        }
+
+        private void fProgram_Close(object sender, EventArgs e)
+        {
+            //UnRegisterHotKey(F1)
+            UnregisterHotKey(this.Handle, 31196);
         }
 
         //Form Input
@@ -78,7 +88,7 @@ namespace AutoKey_Windows
             {
                 //Save
                 SaveProperties();
-                //RegisterHotKey
+                //RegisterHotKey(Userset)
                 Enum.TryParse<Keys>(fToggleKey.Text, true, out Keys keyCode);
                 RegisterHotKey(this.Handle, 31197, 0, (int)keyCode);
                 //Flag
@@ -95,10 +105,12 @@ namespace AutoKey_Windows
                 timerRepeat.Interval = (intervalDelay1 + intervalDelay2 + intervalDelay3 + intervalDelay4 + intervalDelay5 + intervalDelay6 + repeatDelay);
                 //Control
                 SetControl(false);
+                //Overlay
+                overlay1.OverlayControl(0);
             }
             else
             {
-                //UnRegisterHotKey
+                //UnRegisterHotKey(Userset)
                 UnregisterHotKey(this.Handle, 31197);
                 //Flag
                 flagActive = false;
@@ -112,6 +124,8 @@ namespace AutoKey_Windows
                 repeatDelay = default;
                 //Control
                 SetControl(true);
+                //Overlay
+                overlay1.OverlayControl(2);
             }
         }
 
@@ -140,7 +154,6 @@ namespace AutoKey_Windows
             if (CheckRepeat(userSettings.sDelayRepeat)) { fRepeatDelay.Text = userSettings.sDelayRepeat; } else { fRepeatDelay.Text = "1000"; }
             if (CheckToggle(userSettings.sHotKey)) { fToggleKey.Text = userSettings.sHotKey; } else { fToggleKey.Text = "E"; }
             if (CheckBehavior(userSettings.sBehavior)) { fBehavBox.SelectedIndex = int.Parse(userSettings.sBehavior); } else { fBehavBox.SelectedIndex = 0; }
-
         }
 
         private static bool CheckKey(string s)
@@ -150,7 +163,6 @@ namespace AutoKey_Windows
                 return true;
             }
             return false;
-
         }
 
         private static bool CheckDelay(string s)
@@ -183,7 +195,6 @@ namespace AutoKey_Windows
                 return false;
             }
             return true;
-
         }
 
         private static bool CheckToggle(string s)
@@ -364,8 +375,7 @@ namespace AutoKey_Windows
                 //Form
                 fButton.Enabled = false;
                 fButton.Text = "RUNNING";
-                overlay1 = new Overlay1();
-                overlay1.Show();
+                overlay1.OverlayControl(1);
                 //Repeat
                 timerRepeat.Enabled = true;
             }
@@ -376,8 +386,7 @@ namespace AutoKey_Windows
                 //Form
                 fButton.Enabled = true;
                 fButton.Text = "Unset";
-                overlay1.Close();
-                overlay1 = null;
+                overlay1.OverlayControl(0);
                 //Flag
                 flagRun = false;
             }
@@ -386,7 +395,11 @@ namespace AutoKey_Windows
         //Hotkey
         protected override void WndProc(ref Message m)
         {
-            if (m.WParam.ToInt32() == 31197 && !flagRun)
+            if (m.WParam.ToInt32() == 31196 && !flagRun)
+            {
+                fButton_Click(null, null);
+            }
+            else if (m.WParam.ToInt32() == 31197 && !flagRun)
             {
                 SetActive(true);
             }
