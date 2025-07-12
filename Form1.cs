@@ -11,7 +11,7 @@ namespace AutoKey_Windows
     public partial class fProgram : Form
     {
         [DllImport("user32")]
-        static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vKey);
+        static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vKey);
 
         [DllImport("user32")]
         static extern bool UnregisterHotKey(IntPtr hWnd, int id);
@@ -28,12 +28,12 @@ namespace AutoKey_Windows
         [DllImport("user32")]
         static extern void PostMessage(IntPtr hWnd, uint Msg, int wParam, IntPtr lParam);
 
-        private static bool flagActive = false, flagRun = false;
-        private static int intervalDelay1, intervalDelay2, intervalDelay3, intervalDelay4, intervalDelay5, intervalDelay6, repeatDelay;
-        private static IntPtr iHandle;
-        private static System.Timers.Timer timerRepeat;
-        private UserSettings userSettings;
-        private Overlay1 overlay1;
+        static bool flagActive = false, flagRun = false;
+        static int intervalDelay1, intervalDelay2, intervalDelay3, intervalDelay4, intervalDelay5, intervalDelay6, repeatDelay;
+        static System.Timers.Timer timerRepeat;
+        static IntPtr iHandle;
+        static UserSettings userSettings;
+        static Overlay1 overlay1;
 
         public fProgram()
         {
@@ -83,7 +83,7 @@ namespace AutoKey_Windows
                 //Save
                 SaveProperties();
                 //RegisterHotKey(Userset)
-                RegisterHotKey(this.Handle, 31197, 0, (int)(Keys)Enum.ToObject(typeof(Keys), fToggleKey.Text[0]));
+                RegisterHotKey(this.Handle, 31197, 0, (uint)(Keys)Enum.ToObject(typeof(Keys), fToggleKey.Text[0]));
                 //Flag
                 flagActive = true;
                 //Values
@@ -380,22 +380,17 @@ namespace AutoKey_Windows
         //Hotkey
         protected override void WndProc(ref Message m)
         {
-            if (m.WParam.ToInt32() == 31196 && !flagRun)
+            if (m.WParam.ToInt32() == 31196)
             {
+                if (flagRun)
+                {
+                    SetActive(false);
+                }
                 fButton_Click(null, null);
             }
-            if (m.WParam.ToInt32() == 31196 && flagRun)
+            else if (m.WParam.ToInt32() == 31197)
             {
-                SetActive(false);
-                fButton_Click(null, null);
-            }
-            else if (m.WParam.ToInt32() == 31197 && !flagRun)
-            {
-                SetActive(true);
-            }
-            else if (m.WParam.ToInt32() == 31197 && flagRun)
-            {
-                SetActive(false);
+                SetActive(!flagRun);
             }
             base.WndProc(ref m);
         }
