@@ -88,7 +88,7 @@ namespace AutoKey_Windows
 
         private static bool CheckDelay(string s, int l)
         {
-            return s.All(char.IsDigit) && s.Length > l;
+            return s.All(Char.IsDigit) && s.Length <= l;
         }
 
         private void CheckProperties()
