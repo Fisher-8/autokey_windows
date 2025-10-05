@@ -52,19 +52,17 @@ namespace AutoKey_Windows
         private List<Control> controls;
         private UserSettings userSettings;
         private CancellationTokenSource cToken;
-        private System.Windows.Forms.Timer tTimer;
-        private bool isHotKeyDown = false, isRunning = false;
-        private const int hHotKey = 0x0312, iHotKey1 = 31196, iHotKey2 = 31197;
-        private int i, iKey1, iKey2, iKey3, iKey4, iKey5, iKey6;
-        private char cKey1, cKey2, cKey3, cKey4, cKey5, cKey6, cHKey;
-        private bool bConfig = false;
+        private bool bConfig = false, isRunning = false;
+        private const short WM_HOTKEY = 0x0312, HOTKEY_ID_CONFIG = 31196, HOTKEY_ID_ACTIVE = 31197;
+        private short i, iKey1, iKey2, iKey3, iKey4, iKey5, iKey6;
+        private ushort cKey1, cKey2, cKey3, cKey4, cKey5, cKey6, cHKey;
 
         //Init
         public fProgram()
         {
             InitializeComponent();
-            this.Load += (s, e) => RegisterHotKey(this.Handle, iHotKey1, 0, (uint)Keys.F1); LoadUserSetting();
-            this.FormClosing += (s, e) => UnregisterHotKey(this.Handle, iHotKey1);
+            this.Load += (s, e) => RegisterHotKey(this.Handle, HOTKEY_ID_CONFIG, 0, (ushort)Keys.F1); LoadUserSetting();
+            this.FormClosing += (s, e) => UnregisterHotKey(this.Handle, HOTKEY_ID_CONFIG);
             controls = new List<Control> { fUse1, fUse2, fUse3, fUse4, fUse5, fUse6, fKey1, fKey2, fKey3, fKey4, fKey5, fKey6, fDelay1, fDelay2, fDelay3, fDelay4, fDelay5, fDelay6, fToggleKey };
         }
 
@@ -75,7 +73,7 @@ namespace AutoKey_Windows
 
         //UserSettings
         private static bool CheckKey(string s) { return Regex.IsMatch(s, @"^[0-9A-Z]") && s.Length == 1; }
-        private static bool CheckDelay(string s, int l) { return s.All(Char.IsDigit) && s.Length <= l; }
+        private static bool CheckDelay(string s, short l) { return s.All(Char.IsDigit) && s.Length <= l; }
         private void LoadUserSetting()
         {
             userSettings = UserSettings.Load();
@@ -126,24 +124,24 @@ namespace AutoKey_Windows
         //Form
         private void GetUserSttings()
         {
-            if (fUse1.Checked && fDelay1.Text.Length > 0 && int.TryParse(fDelay1.Text, out i)) { iKey1 = i; }
-            if (fUse2.Checked && fDelay2.Text.Length > 0 && int.TryParse(fDelay2.Text, out i)) { iKey2 = i; }
-            if (fUse3.Checked && fDelay3.Text.Length > 0 && int.TryParse(fDelay3.Text, out i)) { iKey3 = i; }
-            if (fUse4.Checked && fDelay4.Text.Length > 0 && int.TryParse(fDelay4.Text, out i)) { iKey4 = i; }
-            if (fUse5.Checked && fDelay5.Text.Length > 0 && int.TryParse(fDelay5.Text, out i)) { iKey5 = i; }
-            if (fUse6.Checked && fDelay6.Text.Length > 0 && int.TryParse(fDelay6.Text, out i)) { iKey6 = i; }
-            if (fUse1.Checked && fKey1.Text.Length == 1) { cKey1 = fKey1.Text.ToCharArray()[0]; }
-            if (fUse2.Checked && fKey2.Text.Length == 1) { cKey2 = fKey2.Text.ToCharArray()[0]; }
-            if (fUse3.Checked && fKey3.Text.Length == 1) { cKey3 = fKey3.Text.ToCharArray()[0]; }
-            if (fUse4.Checked && fKey4.Text.Length == 1) { cKey4 = fKey4.Text.ToCharArray()[0]; }
-            if (fUse5.Checked && fKey5.Text.Length == 1) { cKey5 = fKey5.Text.ToCharArray()[0]; }
-            if (fUse6.Checked && fKey6.Text.Length == 1) { cKey6 = fKey6.Text.ToCharArray()[0]; }
-            if (fToggleKey.Text.Length == 1) { cHKey = fToggleKey.Text.ToCharArray()[0]; }
+            if (fUse1.Checked && fDelay1.Text.Length > 0 && short.TryParse(fDelay1.Text, out i)) { iKey1 = i; }
+            if (fUse2.Checked && fDelay2.Text.Length > 0 && short.TryParse(fDelay2.Text, out i)) { iKey2 = i; }
+            if (fUse3.Checked && fDelay3.Text.Length > 0 && short.TryParse(fDelay3.Text, out i)) { iKey3 = i; }
+            if (fUse4.Checked && fDelay4.Text.Length > 0 && short.TryParse(fDelay4.Text, out i)) { iKey4 = i; }
+            if (fUse5.Checked && fDelay5.Text.Length > 0 && short.TryParse(fDelay5.Text, out i)) { iKey5 = i; }
+            if (fUse6.Checked && fDelay6.Text.Length > 0 && short.TryParse(fDelay6.Text, out i)) { iKey6 = i; }
+            if (fUse1.Checked && fKey1.Text.Length == 1) { cKey1 = fKey1.Text.ToUpper().ToCharArray()[0]; }
+            if (fUse2.Checked && fKey2.Text.Length == 1) { cKey2 = fKey2.Text.ToUpper().ToCharArray()[0]; }
+            if (fUse3.Checked && fKey3.Text.Length == 1) { cKey3 = fKey3.Text.ToUpper().ToCharArray()[0]; }
+            if (fUse4.Checked && fKey4.Text.Length == 1) { cKey4 = fKey4.Text.ToUpper().ToCharArray()[0]; }
+            if (fUse5.Checked && fKey5.Text.Length == 1) { cKey5 = fKey5.Text.ToUpper().ToCharArray()[0]; }
+            if (fUse6.Checked && fKey6.Text.Length == 1) { cKey6 = fKey6.Text.ToUpper().ToCharArray()[0]; }
+            if (fToggleKey.Text.Length == 1) { cHKey = fToggleKey.Text.ToUpper().ToCharArray()[0]; }
         }
         private void SetControls(bool b)
         {
             foreach (Control ctl in controls) { ctl.Enabled = b; }
-            if (b) { fButton.Text = "Set"; } else { fButton.Text = "Unset"; }
+            if (b) { fButton.Text = "Set (F1)"; } else { fButton.Text = "Unset (F1)"; }
         }
 
         //Config
@@ -152,7 +150,7 @@ namespace AutoKey_Windows
             if (b)
             {
                 SetControls(b);
-                UnregisterHotKey(this.Handle, iHotKey2);
+                UnregisterHotKey(this.Handle, HOTKEY_ID_ACTIVE);
                 bConfig = false;
             }
             else
@@ -160,9 +158,8 @@ namespace AutoKey_Windows
                 bConfig = true;
                 SaveUserSetting();
                 GetUserSttings();
-                RegisterHotKey(this.Handle, iHotKey2, 0, (uint)(Keys)Enum.ToObject(typeof(Keys), cHKey));
+                RegisterHotKey(this.Handle, HOTKEY_ID_ACTIVE, 0, (ushort)(Keys)Enum.ToObject(typeof(Keys), cHKey));
                 SetControls(b);
-                SetTimer();
             }
         }
 
@@ -189,21 +186,18 @@ namespace AutoKey_Windows
             KUp(vk);
         }
 
-        //Timer
-        private void SetTimer()
-        {
-            tTimer = new System.Windows.Forms.Timer();
-            tTimer.Interval = 100;
-            tTimer.Tick += tTimer_Tick;
-        }
-        private void tTimer_Tick(object sender, EventArgs e)
-        {
-            isHotKeyDown = (GetAsyncKeyState(cHKey) & 0x8000) != 0;
-            if (!isHotKeyDown) { tTimer.Stop(); StopAutoKey(); return; }
-            StartAutoKey();
-        }
-
         //Automation
+        private async void CheckAutoKey(CancellationToken t)
+        {
+            while (!t.IsCancellationRequested)
+            {
+                if ((GetAsyncKeyState(cHKey) & 0x8000) == 0)
+                {
+                    StopAutoKey(); break;
+                }
+                await Task.Delay(100, t);
+            }
+        }
         private async void StartAutoKey()
         {
             if (isRunning) { return; }
@@ -211,6 +205,7 @@ namespace AutoKey_Windows
             cToken = new CancellationTokenSource();
             var t = cToken.Token;
             isRunning = true;
+            await Task.Run(() => CheckAutoKey(t));
             try
             {
                 while (!t.IsCancellationRequested)
@@ -225,7 +220,6 @@ namespace AutoKey_Windows
             }
             catch (TaskCanceledException) { }
             finally { isRunning = false; }
-
         }
         private void StopAutoKey()
         {
@@ -236,10 +230,10 @@ namespace AutoKey_Windows
         //Hotkey
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == hHotKey)
+            if (m.Msg == WM_HOTKEY)
             {
-                if (m.WParam.ToInt32() == iHotKey1) { SetConfig(bConfig); }
-                else if (m.WParam.ToInt32() == iHotKey2) { tTimer.Start();  }
+                if (m.WParam.ToInt32() == HOTKEY_ID_CONFIG) { SetConfig(bConfig); }
+                else if (m.WParam.ToInt32() == HOTKEY_ID_ACTIVE) { StartAutoKey(); }
             }
             base.WndProc(ref m);
         }

@@ -303,7 +303,7 @@
             this.fButton.Name = "fButton";
             this.fButton.Size = new System.Drawing.Size(110, 23);
             this.fButton.TabIndex = 0;
-            this.fButton.Text = "Set";
+            this.fButton.Text = "Set (F1)";
             this.fButton.UseVisualStyleBackColor = true;
             this.fButton.Click += new System.EventHandler(this.fButton_Click);
             // 
