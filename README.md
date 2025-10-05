@@ -1,4 +1,4 @@
-<img width="124" height="220" alt="image" src="https://github.com/user-attachments/assets/6e5b43d0-01b1-4883-ab7f-6ba3666715d6" />
+<img width="124" height="220" alt="image" src="https://github.com/user-attachments/assets/9cdee58e-6c39-4d38-b782-ee1a9a554e59" />
 
 단순한 키보드 자동 입력 매크로
 
