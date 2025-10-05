@@ -21,7 +21,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.fUse1 = new System.Windows.Forms.CheckBox();
             this.fUse2 = new System.Windows.Forms.CheckBox();
             this.fUse3 = new System.Windows.Forms.CheckBox();
@@ -40,9 +39,7 @@
             this.fDelay4 = new System.Windows.Forms.TextBox();
             this.fDelay5 = new System.Windows.Forms.TextBox();
             this.fDelay6 = new System.Windows.Forms.TextBox();
-            this.fRepeatDelay = new System.Windows.Forms.TextBox();
             this.fToggleKey = new System.Windows.Forms.TextBox();
-            this.fBehavBox = new System.Windows.Forms.ComboBox();
             this.fButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -104,19 +101,10 @@
             // 
             this.label7.Location = new System.Drawing.Point(8, 141);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(34, 13);
+            this.label7.Size = new System.Drawing.Size(50, 13);
             this.label7.TabIndex = 6;
-            this.label7.Text = "Delay";
+            this.label7.Text = "HotKey";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // label8
-            // 
-            this.label8.Location = new System.Drawing.Point(8, 163);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(42, 13);
-            this.label8.TabIndex = 7;
-            this.label8.Text = "HotKey";
-            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // fUse1
             // 
@@ -298,21 +286,10 @@
             this.fDelay6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fDelay6.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fDigit_KeyPress);
             // 
-            // fRepeatDelay
-            // 
-            this.fRepeatDelay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fRepeatDelay.Location = new System.Drawing.Point(65, 138);
-            this.fRepeatDelay.MaxLength = 5;
-            this.fRepeatDelay.Name = "fRepeatDelay";
-            this.fRepeatDelay.Size = new System.Drawing.Size(50, 20);
-            this.fRepeatDelay.TabIndex = 19;
-            this.fRepeatDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.fRepeatDelay.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fDigit_KeyPress);
-            // 
             // fToggleKey
             // 
             this.fToggleKey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fToggleKey.Location = new System.Drawing.Point(65, 160);
+            this.fToggleKey.Location = new System.Drawing.Point(65, 138);
             this.fToggleKey.MaxLength = 1;
             this.fToggleKey.Name = "fToggleKey";
             this.fToggleKey.Size = new System.Drawing.Size(50, 20);
@@ -320,22 +297,9 @@
             this.fToggleKey.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.fToggleKey.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fKey_KeyPress);
             // 
-            // fBehavBox
-            // 
-            this.fBehavBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.fBehavBox.Items.AddRange(new object[] {
-            "Post KeyDown",
-            "Post KeyDown+Up",
-            "SendKeys"});
-            this.fBehavBox.Location = new System.Drawing.Point(7, 183);
-            this.fBehavBox.MaxDropDownItems = 3;
-            this.fBehavBox.Name = "fBehavBox";
-            this.fBehavBox.Size = new System.Drawing.Size(108, 21);
-            this.fBehavBox.TabIndex = 21;
-            // 
             // fButton
             // 
-            this.fButton.Location = new System.Drawing.Point(6, 205);
+            this.fButton.Location = new System.Drawing.Point(6, 159);
             this.fButton.Name = "fButton";
             this.fButton.Size = new System.Drawing.Size(110, 23);
             this.fButton.TabIndex = 0;
@@ -345,16 +309,8 @@
             // 
             // fProgram
             // 
-            this.Name = "fProgram";
-            this.Text = "AutoKey";
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.ClientSize = new System.Drawing.Size(122, 234);
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Load += new System.EventHandler(this.fProgram_Load);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.fProgram_Close);
+            this.ClientSize = new System.Drawing.Size(122, 188);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label3);
@@ -362,7 +318,6 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.label8);
             this.Controls.Add(this.fUse1);
             this.Controls.Add(this.fUse2);
             this.Controls.Add(this.fUse3);
@@ -381,10 +336,14 @@
             this.Controls.Add(this.fDelay4);
             this.Controls.Add(this.fDelay5);
             this.Controls.Add(this.fDelay6);
-            this.Controls.Add(this.fRepeatDelay);
             this.Controls.Add(this.fToggleKey);
-            this.Controls.Add(this.fBehavBox);
             this.Controls.Add(this.fButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "fProgram";
+            this.Text = "AutoKey";
             this.ResumeLayout(false);
             this.PerformLayout();
         }
@@ -395,7 +354,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox fUse1;
         private System.Windows.Forms.CheckBox fUse2;
         private System.Windows.Forms.CheckBox fUse3;
@@ -414,9 +372,7 @@
         private System.Windows.Forms.TextBox fDelay4;
         private System.Windows.Forms.TextBox fDelay5;
         private System.Windows.Forms.TextBox fDelay6;
-        private System.Windows.Forms.TextBox fRepeatDelay;
         private System.Windows.Forms.TextBox fToggleKey;
-        private System.Windows.Forms.ComboBox fBehavBox;
         private System.Windows.Forms.Button fButton;
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Timers;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace AutoKey_Windows
@@ -11,87 +12,71 @@ namespace AutoKey_Windows
     public partial class fProgram : Form
     {
         [DllImport("user32")]
-        static extern IntPtr FindWindowEx(IntPtr hWnd1, IntPtr hWnd2, string lpsz1, string lpsz2);
-
+        private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vKey);
         [DllImport("user32")]
-        static extern IntPtr GetForegroundWindow();
-
+        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
         [DllImport("user32")]
-        static extern bool IsWindow(IntPtr hWnd);
-
+        private static extern short GetAsyncKeyState(int vKey);
         [DllImport("user32")]
-        static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vKey);
+        private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
-        [DllImport("user32")]
-        static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+        private const int INPUT_KEYBOARD = 1, KEYEVENTF_EXTENDEDKEY = 0x0001, KEYEVENTF_KEYUP = 0x0002, KEYEVENTF_UNICODE = 0x0004, KEYEVENTF_SCANCODE = 0x0008;
+        [StructLayout(LayoutKind.Sequential)]
+        private struct KEYBDINPUT
+        {
+            public ushort wVk, wScan; public uint dwFlags, time; public IntPtr dwExtraInfo;
+        }
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MOUSEINPUT
+        {
+            public int dx, dy; public uint mouseData, dwFlags, time; public IntPtr dwExtraInfo;
+        }
+        [StructLayout(LayoutKind.Sequential)]
+        private struct HARDWAREINPUT
+        {
+            public uint uMsg; public ushort wParamL, wParamH;
+        }
+        [StructLayout(LayoutKind.Explicit)]
+        private struct INPUT
+        {
+            [FieldOffset(0)]
+            public int type;
+            [FieldOffset(8)]
+            public KEYBDINPUT ki;
+            [FieldOffset(8)]
+            public MOUSEINPUT mi;
+            [FieldOffset(8)]
+            public HARDWAREINPUT hi;
+        }
 
-        [DllImport("user32")]
-        static extern void PostMessage(IntPtr hWnd, uint Msg, int wParam, IntPtr lParam);
-
-        private bool bConfig = false, bActive = false;
-        private int i, iDelay1, iDelay2, iDelay3, iDelay4, iDelay5, iDelay6, iRDelay;
-        private char cKey1, cKey2, cKey3, cKey4, cKey5, cKey6, cTKey;
-        private const int hHotKey = 0x0312, iHotKey1 = 31196, iHotKey2 = 31197;
-        private System.Timers.Timer timerRepeat;
-        private IntPtr iHandle;
+        private List<Control> controls;
         private UserSettings userSettings;
-        private Overlay1 overlay1;
+        private CancellationTokenSource cToken;
+        private System.Windows.Forms.Timer tTimer;
+        private bool isHotKeyDown = false, isRunning = false;
+        private const int hHotKey = 0x0312, iHotKey1 = 31196, iHotKey2 = 31197;
+        private int i, iKey1, iKey2, iKey3, iKey4, iKey5, iKey6;
+        private char cKey1, cKey2, cKey3, cKey4, cKey5, cKey6, cHKey;
+        private bool bConfig = false;
 
+        //Init
         public fProgram()
         {
             InitializeComponent();
+            this.Load += (s, e) => RegisterHotKey(this.Handle, iHotKey1, 0, (uint)Keys.F1); LoadUserSetting();
+            this.FormClosing += (s, e) => UnregisterHotKey(this.Handle, iHotKey1);
+            controls = new List<Control> { fUse1, fUse2, fUse3, fUse4, fUse5, fUse6, fKey1, fKey2, fKey3, fKey4, fKey5, fKey6, fDelay1, fDelay2, fDelay3, fDelay4, fDelay5, fDelay6, fToggleKey };
         }
 
-        private void fProgram_Load(object sender, EventArgs e)
-        {
-            CheckProperties();
-            SetTimer();
-            //RegisterHotKey(F1)
-            RegisterHotKey(this.Handle, iHotKey1, 0, 0x70);
-            //Overlay
-            overlay1 = new Overlay1();
-            overlay1.Owner = this;
-        }
+        //Form Input
+        private void fKey_KeyPress(object sender, KeyPressEventArgs e) { e.Handled = !(e.KeyChar == Convert.ToChar(Keys.Back) || Regex.IsMatch(e.KeyChar.ToString(), @"^[0-9A-Z]")); }
+        private void fDigit_KeyPress(object sender, KeyPressEventArgs e) { e.Handled = !(e.KeyChar == Convert.ToChar(Keys.Back) || char.IsDigit(e.KeyChar)); }
+        private void fButton_Click(object sender, EventArgs e) { SetConfig(bConfig); }
 
-        private void fProgram_Close(object sender, EventArgs e)
-        {
-            //UnRegisterHotKey(F1)
-            UnregisterHotKey(this.Handle, iHotKey1);
-        }
-
-        //Input
-        private void fKey_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !(e.KeyChar == Convert.ToChar(Keys.Back) || Regex.IsMatch(e.KeyChar.ToString(), @"^[0-9A-Z]"));
-        }
-
-        private void fDigit_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !(e.KeyChar == Convert.ToChar(Keys.Back) || char.IsDigit(e.KeyChar));
-        }
-
-        private void fButton_Click(object sender, EventArgs e)
-        {
-            SetConfig(bConfig);
-        }
-
-        //Check
-        private static bool CheckBehavior(string s)
-        {
-            return Regex.IsMatch(s, @"^[0-2]") && s.Length == 1;
-        }
-
-        private static bool CheckKey(string s)
-        {
-            return Regex.IsMatch(s, @"^[0-9A-Z]") && s.Length == 1;
-        }
-
-        private static bool CheckDelay(string s, int l)
-        {
-            return s.All(Char.IsDigit) && s.Length <= l;
-        }
-
-        private void CheckProperties()
+        //UserSettings
+        private static bool CheckKey(string s) { return Regex.IsMatch(s, @"^[0-9A-Z]") && s.Length == 1; }
+        private static bool CheckDelay(string s, int l) { return s.All(Char.IsDigit) && s.Length <= l; }
+        private void LoadUserSetting()
         {
             userSettings = UserSettings.Load();
             fUse1.Checked = userSettings.bUse1;
@@ -112,13 +97,9 @@ namespace AutoKey_Windows
             if (CheckDelay(userSettings.sDelay4, 4)) { fDelay4.Text = userSettings.sDelay4; } else { fDelay4.Text = "50"; }
             if (CheckDelay(userSettings.sDelay5, 4)) { fDelay5.Text = userSettings.sDelay5; } else { fDelay5.Text = "50"; }
             if (CheckDelay(userSettings.sDelay6, 4)) { fDelay6.Text = userSettings.sDelay6; } else { fDelay6.Text = "50"; }
-            if (CheckDelay(userSettings.sDelayRepeat, 5)) { fRepeatDelay.Text = userSettings.sDelayRepeat; } else { fRepeatDelay.Text = "1000"; }
             if (CheckKey(userSettings.sHotKey)) { fToggleKey.Text = userSettings.sHotKey; } else { fToggleKey.Text = "E"; }
-            if (CheckBehavior(userSettings.sBehavior)) { fBehavBox.SelectedIndex = int.Parse(userSettings.sBehavior); } else { fBehavBox.SelectedIndex = 0; }
         }
-
-        //Save
-        private void SaveProperties()
+        private void SaveUserSetting()
         {
             userSettings.bUse1 = fUse1.Checked;
             userSettings.bUse2 = fUse2.Checked;
@@ -138,36 +119,30 @@ namespace AutoKey_Windows
             userSettings.sDelay4 = fDelay4.Text;
             userSettings.sDelay5 = fDelay5.Text;
             userSettings.sDelay6 = fDelay6.Text;
-            userSettings.sDelayRepeat = fRepeatDelay.Text;
             userSettings.sHotKey = fToggleKey.Text;
-            userSettings.sBehavior = fBehavBox.SelectedIndex.ToString();
             userSettings.Save();
         }
 
         //Form
-        private void SetControl(bool b)
+        private void GetUserSttings()
         {
-            fUse1.Enabled = b;
-            fUse2.Enabled = b;
-            fUse3.Enabled = b;
-            fUse4.Enabled = b;
-            fUse5.Enabled = b;
-            fUse6.Enabled = b;
-            fKey1.Enabled = b;
-            fKey2.Enabled = b;
-            fKey3.Enabled = b;
-            fKey4.Enabled = b;
-            fKey5.Enabled = b;
-            fKey6.Enabled = b;
-            fDelay1.Enabled = b;
-            fDelay2.Enabled = b;
-            fDelay3.Enabled = b;
-            fDelay4.Enabled = b;
-            fDelay5.Enabled = b;
-            fDelay6.Enabled = b;
-            fRepeatDelay.Enabled = b;
-            fToggleKey.Enabled = b;
-            fBehavBox.Enabled = b;
+            if (fUse1.Checked && fDelay1.Text.Length > 0 && int.TryParse(fDelay1.Text, out i)) { iKey1 = i; }
+            if (fUse2.Checked && fDelay2.Text.Length > 0 && int.TryParse(fDelay2.Text, out i)) { iKey2 = i; }
+            if (fUse3.Checked && fDelay3.Text.Length > 0 && int.TryParse(fDelay3.Text, out i)) { iKey3 = i; }
+            if (fUse4.Checked && fDelay4.Text.Length > 0 && int.TryParse(fDelay4.Text, out i)) { iKey4 = i; }
+            if (fUse5.Checked && fDelay5.Text.Length > 0 && int.TryParse(fDelay5.Text, out i)) { iKey5 = i; }
+            if (fUse6.Checked && fDelay6.Text.Length > 0 && int.TryParse(fDelay6.Text, out i)) { iKey6 = i; }
+            if (fUse1.Checked && fKey1.Text.Length == 1) { cKey1 = fKey1.Text.ToCharArray()[0]; }
+            if (fUse2.Checked && fKey2.Text.Length == 1) { cKey2 = fKey2.Text.ToCharArray()[0]; }
+            if (fUse3.Checked && fKey3.Text.Length == 1) { cKey3 = fKey3.Text.ToCharArray()[0]; }
+            if (fUse4.Checked && fKey4.Text.Length == 1) { cKey4 = fKey4.Text.ToCharArray()[0]; }
+            if (fUse5.Checked && fKey5.Text.Length == 1) { cKey5 = fKey5.Text.ToCharArray()[0]; }
+            if (fUse6.Checked && fKey6.Text.Length == 1) { cKey6 = fKey6.Text.ToCharArray()[0]; }
+            if (fToggleKey.Text.Length == 1) { cHKey = fToggleKey.Text.ToCharArray()[0]; }
+        }
+        private void SetControls(bool b)
+        {
+            foreach (Control ctl in controls) { ctl.Enabled = b; }
             if (b) { fButton.Text = "Set"; } else { fButton.Text = "Unset"; }
         }
 
@@ -176,137 +151,86 @@ namespace AutoKey_Windows
         {
             if (b)
             {
-                //Stop
-                SetActive(b);
-                //Control
-                SetControl(b);
-                //Overlay
-                overlay1.OverlayControl(2);
-                //UnRegisterHotKey
+                SetControls(b);
                 UnregisterHotKey(this.Handle, iHotKey2);
-                //Flag
                 bConfig = false;
             }
             else
             {
-                //Save
-                SaveProperties();
-                //Flag
                 bConfig = true;
-                //Values
-                if (fUse1.Checked && fDelay1.Text.Length > 0 && int.TryParse(fDelay1.Text, out i)) { iDelay1 = i; }
-                if (fUse2.Checked && fDelay2.Text.Length > 0 && int.TryParse(fDelay2.Text, out i)) { iDelay2 = i; }
-                if (fUse3.Checked && fDelay3.Text.Length > 0 && int.TryParse(fDelay3.Text, out i)) { iDelay3 = i; }
-                if (fUse4.Checked && fDelay4.Text.Length > 0 && int.TryParse(fDelay4.Text, out i)) { iDelay4 = i; }
-                if (fUse5.Checked && fDelay5.Text.Length > 0 && int.TryParse(fDelay5.Text, out i)) { iDelay5 = i; }
-                if (fUse6.Checked && fDelay6.Text.Length > 0 && int.TryParse(fDelay6.Text, out i)) { iDelay6 = i; }
-                if (fRepeatDelay.Text.Length > 0 && int.TryParse(fRepeatDelay.Text, out i)) { iRDelay = i; }
-                if (fUse1.Checked && fKey1.Text.Length == 1) { cKey1 = fKey1.Text.ToCharArray()[0]; }
-                if (fUse2.Checked && fKey2.Text.Length == 1) { cKey2 = fKey2.Text.ToCharArray()[0]; }
-                if (fUse3.Checked && fKey3.Text.Length == 1) { cKey3 = fKey3.Text.ToCharArray()[0]; }
-                if (fUse4.Checked && fKey4.Text.Length == 1) { cKey4 = fKey4.Text.ToCharArray()[0]; }
-                if (fUse5.Checked && fKey5.Text.Length == 1) { cKey5 = fKey5.Text.ToCharArray()[0]; }
-                if (fUse6.Checked && fKey6.Text.Length == 1) { cKey6 = fKey6.Text.ToCharArray()[0]; }
-                if (fToggleKey.Text.Length == 1) { cTKey = fToggleKey.Text.ToCharArray()[0]; }
-                //RegisterHotKey
-                RegisterHotKey(this.Handle, iHotKey2, 0, (uint)(Keys)Enum.ToObject(typeof(Keys), cTKey));
-                //Timer
-                timerRepeat.Interval = iDelay1 + iDelay2 + iDelay3 + iDelay4 + iDelay5 + iDelay6 + iRDelay;
-                //Overlay
-                overlay1.OverlayControl(0);
-                //Control
-                SetControl(b);
+                SaveUserSetting();
+                GetUserSttings();
+                RegisterHotKey(this.Handle, iHotKey2, 0, (uint)(Keys)Enum.ToObject(typeof(Keys), cHKey));
+                SetControls(b);
+                SetTimer();
             }
         }
 
-        //Active
-        private void SetActive(bool b)
+        //Input
+        private void KDown(ushort vk)
         {
-            if (b)
-            {
-                //Stop
-                timerRepeat.Enabled = false;
-                //Form
-                fButton.Enabled = true;
-                fButton.Text = "Unset";
-                overlay1.OverlayControl(0);
-                //Flag
-                bActive = false;
-            }
-            else
-            {
-                //Flag
-                bActive = true;
-                //Get Active Process Handle
-                iHandle = GetHandle();
-                //Form
-                fButton.Enabled = false;
-                fButton.Text = "RUNNING";
-                overlay1.OverlayControl(1);
-                //Start
-                timerRepeat.Enabled = true;
-            }
+            INPUT[] input = new INPUT[1];
+            input[0].type = INPUT_KEYBOARD;
+            input[0].ki.wVk = vk;
+            input[0].ki.dwFlags = 0;
+            SendInput(1, input, Marshal.SizeOf(typeof(INPUT)));
+        }
+        private void KUp(ushort vk)
+        {
+            INPUT[] input = new INPUT[1];
+            input[0].type = INPUT_KEYBOARD;
+            input[0].ki.wVk = vk;
+            input[0].ki.dwFlags = KEYEVENTF_KEYUP;
+            SendInput(1, input, Marshal.SizeOf(typeof(INPUT)));
+        }
+        private void KTap(ushort vk)
+        {
+            KDown(vk);
+            KUp(vk);
         }
 
         //Timer
         private void SetTimer()
         {
-            timerRepeat = new System.Timers.Timer();
-            switch (fBehavBox.SelectedIndex)
-            {
-                case 0: timerRepeat.Elapsed += new ElapsedEventHandler(AutoKey1); break;
-                case 1: timerRepeat.Elapsed += new ElapsedEventHandler(AutoKey2); break;
-                case 2: timerRepeat.Elapsed += new ElapsedEventHandler(AutoKey3); break;
-            }
-            timerRepeat.AutoReset = true;
+            tTimer = new System.Windows.Forms.Timer();
+            tTimer.Interval = 100;
+            tTimer.Tick += tTimer_Tick;
+        }
+        private void tTimer_Tick(object sender, EventArgs e)
+        {
+            isHotKeyDown = (GetAsyncKeyState(cHKey) & 0x8000) != 0;
+            if (!isHotKeyDown) { tTimer.Stop(); StopAutoKey(); return; }
+            StartAutoKey();
         }
 
-        //Handle
-        private IntPtr GetHandle()
+        //Automation
+        private async void StartAutoKey()
         {
-            if (FindWindowEx(GetForegroundWindow(), IntPtr.Zero, null, "")  != IntPtr.Zero)
+            if (isRunning) { return; }
+            cToken?.Dispose();
+            cToken = new CancellationTokenSource();
+            var t = cToken.Token;
+            isRunning = true;
+            try
             {
-                return FindWindowEx(GetForegroundWindow(), IntPtr.Zero, null, "");
+                while (!t.IsCancellationRequested)
+                {
+                    if (fUse1.Checked) { KTap((ushort)cKey1); await Task.Delay(iKey1, t); }
+                    if (fUse2.Checked) { KTap((ushort)cKey2); await Task.Delay(iKey2, t); }
+                    if (fUse3.Checked) { KTap((ushort)cKey3); await Task.Delay(iKey3, t); }
+                    if (fUse4.Checked) { KTap((ushort)cKey4); await Task.Delay(iKey4, t); }
+                    if (fUse5.Checked) { KTap((ushort)cKey5); await Task.Delay(iKey5, t); }
+                    if (fUse6.Checked) { KTap((ushort)cKey6); await Task.Delay(iKey6, t); }
+                }
             }
-            else
-            {
-                return GetForegroundWindow();
-            }
-        }
+            catch (TaskCanceledException) { }
+            finally { isRunning = false; }
 
-        //Job
-        private async void AutoKey1(object sender, ElapsedEventArgs e)
-        {
-            if (fUse1.Checked) { PostChar(iHandle, cKey1, false); await Task.Delay(iDelay1); }
-            if (fUse2.Checked) { PostChar(iHandle, cKey2, false); await Task.Delay(iDelay2); }
-            if (fUse3.Checked) { PostChar(iHandle, cKey3, false); await Task.Delay(iDelay3); }
-            if (fUse4.Checked) { PostChar(iHandle, cKey4, false); await Task.Delay(iDelay4); }
-            if (fUse5.Checked) { PostChar(iHandle, cKey5, false); await Task.Delay(iDelay5); }
-            if (fUse6.Checked) { PostChar(iHandle, cKey6, false); await Task.Delay(iDelay6); }
         }
-        private async void AutoKey2(object sender, ElapsedEventArgs e)
+        private void StopAutoKey()
         {
-            if (fUse1.Checked) { PostChar(iHandle, cKey1, true); await Task.Delay(iDelay1); }
-            if (fUse2.Checked) { PostChar(iHandle, cKey2, true); await Task.Delay(iDelay2); }
-            if (fUse3.Checked) { PostChar(iHandle, cKey3, true); await Task.Delay(iDelay3); }
-            if (fUse4.Checked) { PostChar(iHandle, cKey4, true); await Task.Delay(iDelay4); }
-            if (fUse5.Checked) { PostChar(iHandle, cKey5, true); await Task.Delay(iDelay5); }
-            if (fUse6.Checked) { PostChar(iHandle, cKey6, true); await Task.Delay(iDelay6); }
-        }
-        private async void AutoKey3(object sender, ElapsedEventArgs e)
-        {
-            if (fUse1.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey1.Text); await Task.Delay(iDelay1); }
-            if (fUse2.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey2.Text); await Task.Delay(iDelay2); }
-            if (fUse3.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey3.Text); await Task.Delay(iDelay3); }
-            if (fUse4.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey4.Text); await Task.Delay(iDelay4); }
-            if (fUse5.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey5.Text); await Task.Delay(iDelay5); }
-            if (fUse6.Checked && iHandle == GetForegroundWindow()) { SendKeys.SendWait(fKey6.Text); await Task.Delay(iDelay6); }
-        }
-
-        //PostMessage
-        static void PostChar(IntPtr i, char k, bool b)
-        {
-            if (IsWindow(i)) { PostMessage(i, 0x0100, k, IntPtr.Zero); if (b) { PostMessage(i, 0x0101, k, IntPtr.Zero); } }
+            isRunning = false;
+            cToken?.Cancel();
         }
 
         //Hotkey
@@ -315,7 +239,7 @@ namespace AutoKey_Windows
             if (m.Msg == hHotKey)
             {
                 if (m.WParam.ToInt32() == iHotKey1) { SetConfig(bConfig); }
-                else if (m.WParam.ToInt32() == iHotKey2) { SetActive(bActive); }
+                else if (m.WParam.ToInt32() == iHotKey2) { tTimer.Start();  }
             }
             base.WndProc(ref m);
         }
