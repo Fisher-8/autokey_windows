@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/e57f7b74-d7c3-4220-a30c-632204632e8e)
+<img width="124" height="220" alt="image" src="https://github.com/user-attachments/assets/6e5b43d0-01b1-4883-ab7f-6ba3666715d6" />
 
 단순한 키보드 자동 입력 매크로
 
@@ -6,5 +6,4 @@
 2. 키 입력 지연 시간 및 반복 간격 설정 가능
 3. 설정은 실행파일명.config 로 실행 파일 위치에 저장
 4. 설정 등록 핫키는 F1, 실행 핫키는 0-9, A-Z 중 직접 설정 가능
-5. 실행 핫키가 실행 당시 활성 상태인 프로그램으로만 입력 됨
-6. 키 입력 방식 설정 가능(PostMessage: 해당 프로그램으로 키 전송, SendKeys: 해당 프로그램이 활성일 때만 키 입력)
+5. 실행 핫키를 누르고 있는 동안 입력 됨 (실행 핫키는 입력 불가)
